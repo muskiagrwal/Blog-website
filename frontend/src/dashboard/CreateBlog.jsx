@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import imgPlaceholder from "../assets/imgPL.webp"; // Make sure this image exists in assets
+import imgPlaceholder from "../assets/imgPL.webp"; // Ensure this exists
 
 function CreateBlog() {
   const [title, setTitle] = useState("");
@@ -14,7 +14,7 @@ function CreateBlog() {
   const API_BASE_URL =
     import.meta.env.VITE_API_URL || "https://blog-website-cdji.onrender.com";
 
-  // Handle image selection & preview
+  // Handle image selection
   const changePhotoHandler = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -31,7 +31,7 @@ function CreateBlog() {
     };
   };
 
-  // Handle blog submission
+  // Handle blog creation
   const handleCreateBlog = async (e) => {
     e.preventDefault();
 
@@ -46,16 +46,25 @@ function CreateBlog() {
     formData.append("about", about);
     formData.append("blogImage", blogImage);
 
+    // Get token from localStorage
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return toast.error("You must be logged in to create a blog");
+    }
+
     try {
       setLoading(true);
       const { data } = await axios.post(
         `${API_BASE_URL}/api/blogs/create`,
         formData,
         {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`, // Add JWT token here
+          },
         }
       );
+
       toast.success(data.message || "Blog created successfully");
 
       // Reset form
