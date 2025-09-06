@@ -1,14 +1,17 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
+// Use environment variable, fallback to your deployed API if not set
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://blog-website-cdji.onrender.com";
+
 function Creators() {
   const [creators, setCreators] = useState([]);
-  console.log(creators);
+
   useEffect(() => {
     const fetchCreators = async () => {
       try {
         const { data } = await axios.get(
-          "http://localhost:4001/api/users/admins",
+          `${API_BASE_URL}/api/users/admins`,
           {
             withCredentials: true,
           }
