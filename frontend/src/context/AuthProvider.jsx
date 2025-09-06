@@ -3,6 +3,9 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext();
 
+// Use an environment variable for API base URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://blog-website-cdji.onrender.com";
+
 export const AuthProvider = ({ children }) => {
   const [blogs, setBlogs] = useState();
   const [profile, setProfile] = useState();
@@ -11,12 +14,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // token should be let type variable because its value will change in every login. (in backend also)
-        let token = localStorage.getItem("jwt"); // Retrieve the token directly from the localStorage (Go to login.jsx)
+        let token = localStorage.getItem("jwt");
         console.log(token);
         if (token) {
           const { data } = await axios.get(
-            "http://localhost:4001/api/users/my-profile",
+            `${API_BASE_URL}/api/users/my-profile`,
             {
               withCredentials: true,
               headers: {
@@ -36,7 +38,7 @@ export const AuthProvider = ({ children }) => {
     const fetchBlogs = async () => {
       try {
         const { data } = await axios.get(
-          "http://localhost:4001/api/blogs/all-blogs",
+          `${API_BASE_URL}/api/blogs/all-blogs`,
           { withCredentials: true }
         );
         console.log(data);
