@@ -3,16 +3,18 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
+// Use env variable or fallback to your Render backend URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://blog-website-cdji.onrender.com";
+
 function Detail() {
   const { id } = useParams();
   const [blogs, setblogs] = useState({});
-  console.log(blogs);
+  
   useEffect(() => {
     const fetchblogs = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:4001/api/blogs/single-blog/${id}`,
-
+          `${API_BASE_URL}/api/blogs/single-blog/${id}`,
           {
             withCredentials: true,
             headers: {
@@ -20,14 +22,15 @@ function Detail() {
             },
           }
         );
-        console.log(data);
         setblogs(data);
       } catch (error) {
         console.log(error);
+        toast.error("Failed to load blog details");
       }
     };
     fetchblogs();
   }, [id]);
+
   return (
     <div>
       <div>
@@ -56,7 +59,6 @@ function Detail() {
               )}
               <div className="md:w-1/2 w-full md:pl-6">
                 <p className="text-lg mb-6">{blogs?.about}</p>
-                {/* Add more content here if needed */}
               </div>
             </div>
           </section>
