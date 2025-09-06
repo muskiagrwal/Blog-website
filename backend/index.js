@@ -6,15 +6,15 @@ import { v2 as cloudinary } from "cloudinary";
 import cookieParser from "cookie-parser";
 import userRoute from "./routes/user.route.js";
 import blogRoute from "./routes/blog.route.js";
-
 import cors from "cors";
+
 const app = express();
 dotenv.config();
 
 const port = process.env.PORT;
 const MONOGO_URL = process.env.MONOG_URI;
 
-//middleware
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -40,9 +40,15 @@ try {
   console.log(error);
 }
 
-// defining routes
+// Defining routes
 app.use("/api/users", userRoute);
 app.use("/api/blogs", blogRoute);
+
+// Add this root route
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
+
 // Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
