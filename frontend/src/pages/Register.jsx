@@ -4,9 +4,11 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 
-function Register() {
-  const { isAuthenticated, setIsAuthenticated, setProfile } = useAuth();
+// Use environment variable, fallback to Render URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://blog-website-cdji.onrender.com";
 
+function Register() {
+  const { setIsAuthenticated, setProfile } = useAuth();
   const navigateTo = useNavigate();
 
   const [name, setName] = useState("");
@@ -19,7 +21,6 @@ function Register() {
   const [photoPreview, setPhotoPreview] = useState("");
 
   const changePhotoHandler = (e) => {
-    console.log(e);
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -39,9 +40,10 @@ function Register() {
     formData.append("role", role);
     formData.append("education", education);
     formData.append("photo", photo);
+
     try {
       const { data } = await axios.post(
-        "http://localhost:4001/api/users/register",
+        `${API_BASE_URL}/api/users/register`,
         formData,
         {
           withCredentials: true,
@@ -50,8 +52,7 @@ function Register() {
           },
         }
       );
-      console.log(data);
-      localStorage.setItem("jwt", data.token); // storing token in localStorage so that if user refreshed the page it will not redirect again in login
+      localStorage.setItem("jwt", data.token);
       toast.success(data.message || "User registered successfully");
       setProfile(data);
       setIsAuthenticated(true);
@@ -66,8 +67,9 @@ function Register() {
       navigateTo("/");
     } catch (error) {
       console.log(error);
+      // Safe error handling
       toast.error(
-        error.response.data.message || "Please fill the required fields"
+        error?.response?.data?.message || error?.message || "Registration failed"
       );
     }
   };
@@ -140,7 +142,7 @@ function Register() {
             <div className="flex items-center mb-4">
               <div className="photo w-20 h-20 mr-4">
                 <img
-                  src={photoPreview ? `${photoPreview}` : "photo"}
+                  src={photoPreview ? photoPreview : "photo"}
                   alt="photo"
                 />
               </div>
