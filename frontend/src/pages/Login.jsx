@@ -12,12 +12,16 @@ function Login() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
 
+  // You can also make this configurable using an environment variable
+  // const API_BASE_URL = import.meta.env.VITE_API_URL || "https://blog-website-cdji.onrender.com";
+  const API_BASE_URL = "https://blog-website-cdji.onrender.com";
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
       const { data } = await axios.post(
-        "http://localhost:4001/api/users/login",
+        `${API_BASE_URL}/api/users/login`,
         { email, password, role },
         {
           withCredentials: true,
@@ -27,8 +31,7 @@ function Login() {
         }
       );
       console.log(data);
-      // Store the token in localStorage
-      localStorage.setItem("jwt", data.token); // storing token in localStorage so that if user refreshed the page it will not redirect again in login
+      localStorage.setItem("jwt", data.token);
       toast.success(data.message || "User Logined successfully", {
         duration: 3000,
       });
@@ -41,7 +44,7 @@ function Login() {
     } catch (error) {
       console.log(error);
       toast.error(
-        error.response.data.message || "Please fill the required fields",
+        error?.response?.data?.message || "Please fill the required fields",
         {
           duration: 3000,
         }
