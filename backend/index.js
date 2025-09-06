@@ -8,11 +8,12 @@ import userRoute from "./routes/user.route.js";
 import blogRoute from "./routes/blog.route.js";
 import cors from "cors";
 
-const app = express();
 dotenv.config();
 
-const port = process.env.PORT;
-const MONOGO_URL = process.env.MONOG_URI;
+const app = express();
+
+const port = process.env.PORT || 4001;
+const MONGO_URL = process.env.MONOG_URI;
 
 // --- CORS SETUP ---
 const allowedOrigins = process.env.FRONTEND_URL
@@ -50,12 +51,17 @@ app.use(
 );
 
 // DB Code
-try {
-  mongoose.connect(MONOGO_URL);
-  console.log("Conntected to MonogDB");
-} catch (error) {
-  console.log(error);
-}
+mongoose
+  .connect(MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((error) => {
+    console.error("MongoDB connection error:", error);
+  });
 
 // Defining routes
 app.use("/api/users", userRoute);
