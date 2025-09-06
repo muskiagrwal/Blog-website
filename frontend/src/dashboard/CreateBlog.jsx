@@ -10,8 +10,10 @@ function CreateBlog() {
   const [blogImage, setBlogImage] = useState("");
   const [blogImagePreview, setBlogImagePreview] = useState("");
 
+  // Use API base URL from env
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "https://blog-website-cdji.onrender.com";
+
   const changePhotoHandler = (e) => {
-    console.log(e);
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -27,11 +29,11 @@ function CreateBlog() {
     formData.append("title", title);
     formData.append("category", category);
     formData.append("about", about);
-
     formData.append("blogImage", blogImage);
+
     try {
       const { data } = await axios.post(
-        "http://localhost:4001/api/blogs/create",
+        `${API_BASE_URL}/api/blogs/create`,
         formData,
         {
           withCredentials: true,
@@ -40,18 +42,17 @@ function CreateBlog() {
           },
         }
       );
-      console.log(data);
-      toast.success(data.message || "User registered successfully");
+      toast.success(data.message || "Blog created successfully");
       setTitle("");
       setCategory("");
       setAbout("");
       setBlogImage("");
       setBlogImagePreview("");
     } catch (error) {
-      console.log(error);
-      toast.error(error.message || "Please fill the required fields");
+      toast.error(error.response?.data?.message || error.message || "Please fill the required fields");
     }
   };
+
   return (
     <div>
       <div className="min-h-screen  py-10">
