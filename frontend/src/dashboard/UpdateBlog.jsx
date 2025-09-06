@@ -3,6 +3,9 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 
+// Use environment variable for API Base URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://blog-website-cdji.onrender.com";
+
 function UpdateBlog() {
   const navigateTo = useNavigate();
   const { id } = useParams();
@@ -10,12 +13,10 @@ function UpdateBlog() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [about, setAbout] = useState("");
-
   const [blogImage, setBlogImage] = useState("");
   const [blogImagePreview, setBlogImagePreview] = useState("");
 
   const changePhotoHandler = (e) => {
-    console.log(e);
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -29,8 +30,7 @@ function UpdateBlog() {
     const fetchBlog = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:4001/api/blogs/single-blog/${id}`,
-
+          `${API_BASE_URL}/api/blogs/single-blog/${id}`,
           {
             withCredentials: true,
             headers: {
@@ -38,7 +38,6 @@ function UpdateBlog() {
             },
           }
         );
-        console.log(data);
         setTitle(data?.title);
         setCategory(data?.category);
         setAbout(data?.about);
@@ -57,11 +56,11 @@ function UpdateBlog() {
     formData.append("title", title);
     formData.append("category", category);
     formData.append("about", about);
-
     formData.append("blogImage", blogImage);
+
     try {
       const { data } = await axios.put(
-        `http://localhost:4001/api/blogs/update/${id}`,
+        `${API_BASE_URL}/api/blogs/update/${id}`,
         formData,
         {
           withCredentials: true,
@@ -70,13 +69,12 @@ function UpdateBlog() {
           },
         }
       );
-      console.log(data);
       toast.success(data.message || "Blog updated successfully");
       navigateTo("/");
     } catch (error) {
       console.log(error);
       toast.error(
-        error.response.data.message || "Please fill the required fields"
+        error?.response?.data?.message || "Please fill the required fields"
       );
     }
   };
@@ -131,7 +129,7 @@ function UpdateBlog() {
             <textarea
               rows="6"
               className="w-full p-2 mb-4 border rounded-md"
-              placeholder="Something about your blog atleast 200 characters!"
+              placeholder="Something about your blog at least 200 characters!"
               value={about}
               onChange={(e) => setAbout(e.target.value)}
             />
