@@ -3,16 +3,18 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
+// Use environment variable for API URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://blog-website-cdji.onrender.com";
+
 function MyBlogs() {
   const [myBlogs, setMyBlogs] = useState([]);
   useEffect(() => {
     const fetchMyBlogs = async () => {
       try {
         const { data } = await axios.get(
-          "http://localhost:4001/api/blogs/my-blog",
+          `${API_BASE_URL}/api/blogs/my-blog`,
           { withCredentials: true }
         );
-        console.log(data);
         setMyBlogs(data);
       } catch (error) {
         console.log(error);
@@ -23,7 +25,7 @@ function MyBlogs() {
 
   const handleDelete = async (id) => {
     await axios
-      .delete(`http://localhost:4001/api/blogs/delete/${id}`, {
+      .delete(`${API_BASE_URL}/api/blogs/delete/${id}`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -31,7 +33,7 @@ function MyBlogs() {
         setMyBlogs((value) => value.filter((blog) => blog._id !== id));
       })
       .catch((error) => {
-        toast.error(error.response.message || "Failed to delete blog");
+        toast.error(error?.response?.data?.message || "Failed to delete blog");
       });
   };
   return (
